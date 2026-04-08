@@ -86,25 +86,35 @@ jobs:
           retention-days: 14
 
       - name: Send Telegram report
-        if: ${{ (github.event_name == 'schedule' || github.event.inputs.send_notifications != 'false') && secrets.TELEGRAM_BOT_TOKEN != '' && secrets.TELEGRAM_CHAT_ID != '' }}
+        if: ${{ github.event_name == 'schedule' || github.event.inputs.send_notifications != 'false' }}
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         shell: bash
         run: |
+          if [ -z "${TELEGRAM_BOT_TOKEN}" ] || [ -z "${TELEGRAM_CHAT_ID}" ]; then
+            echo "Telegram secrets missing, skipping Telegram notification."
+            exit 0
+          fi
+
           curl -fSs -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument" \
             -F "chat_id=${TELEGRAM_CHAT_ID}" \
             -F "caption=Daily scan completed for ${GITHUB_REPOSITORY}. Workflow run: ${RUN_URL}" \
             -F "document=@${REPORT_PATH};type=text/markdown"
 
       - name: Send Discord report
-        if: ${{ (github.event_name == 'schedule' || github.event.inputs.send_notifications != 'false') && secrets.DISCORD_WEBHOOK_URL != '' }}
+        if: ${{ github.event_name == 'schedule' || github.event.inputs.send_notifications != 'false' }}
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         shell: bash
         run: |
+          if [ -z "${DISCORD_WEBHOOK_URL}" ]; then
+            echo "Discord webhook missing, skipping Discord notification."
+            exit 0
+          fi
+
           PAYLOAD_JSON=$(printf '{"content":"Daily scan completed for %s. Report attached.\\n%s"}' \
             "${GITHUB_REPOSITORY}" \
             "${RUN_URL}")
