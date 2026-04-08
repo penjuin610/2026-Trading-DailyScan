@@ -9,7 +9,9 @@ pipeline/run_daily.py
   综合评分  →  输出 watchlist
 
 输出文件：
-  /Users/xiao1/Desktop/2026 Day Scan output/daily_scan_latest.md
+  默认：
+    /Users/xiao1/Desktop/2026 Day Scan output/daily_scan_latest.md
+  可通过环境变量 DAILY_SCAN_OUTPUT_DIR 覆盖输出目录
 
 用法：
   python -m pipeline.run_daily
@@ -22,6 +24,7 @@ import argparse
 from collections import Counter
 import json
 import logging
+import os
 import sys
 import traceback
 from datetime import date, datetime
@@ -54,7 +57,8 @@ logging.basicConfig(
 logger = logging.getLogger("pipeline")
 
 # ── 输出目录 ──────────────────────────────────────────────────
-OUTPUT_DIR = Path("/Users/xiao1/Desktop/2026 Day Scan output")
+DEFAULT_OUTPUT_DIR = Path("/Users/xiao1/Desktop/2026 Day Scan output")
+OUTPUT_DIR = Path(os.environ.get("DAILY_SCAN_OUTPUT_DIR", str(DEFAULT_OUTPUT_DIR))).expanduser()
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 LATEST_REPORT_PATH = OUTPUT_DIR / "daily_scan_latest.md"
 

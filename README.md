@@ -16,8 +16,7 @@ export FINNHUB_API_KEY=your_key     # 可选，用于公司新闻
 python -m pipeline.run_daily
 
 # 4. 查看结果
-cat outputs/watchlists/latest.json
-cat outputs/reports/$(date +%Y-%m-%d).md
+cat "/Users/xiao1/Desktop/2026 Day Scan output/daily_scan_latest.md"
 ```
 
 ## 系统架构
@@ -58,6 +57,21 @@ outputs/
   watchlists/          每日 JSON 输出
   reports/             每日 Markdown 报告
   trade_journal.csv    交易记录（手工填写）
+```
+
+## 单文件输出
+
+默认情况下，本地运行会把完整扫描结果写到：
+
+```bash
+/Users/xiao1/Desktop/2026 Day Scan output/daily_scan_latest.md
+```
+
+如果你想换目录，可以在运行前设置：
+
+```bash
+export DAILY_SCAN_OUTPUT_DIR=/your/output/folder
+python -m pipeline.run_daily
 ```
 
 ## 常用命令
@@ -101,3 +115,32 @@ pipeline 每日输出 outputs/watchlists/latest.json
 - `sentiment.py` 中 `_rule_score()` 可替换为 FinBERT 模型
 - `factor_tests.py` 输出的 CSV 可接 sklearn 做简单的因子组合权重优化
 - `events_calendar.csv` 可接 SEC EDGAR API 自动更新财报日期
+
+## GitHub Actions 自动运行
+
+仓库已包含工作流文件：
+
+```text
+.github/workflows/daily-scan.yml
+```
+
+默认行为：
+
+- 工作日 `20:30 UTC` 自动运行一次
+- GitHub 页面支持手动点击 `Run workflow`
+- 自动上传 `daily_scan_latest.md` 作为 artifact
+- 如果配置了 secrets，会自动推送到 Telegram 和 Discord
+
+### 需要配置的 GitHub Secrets
+
+- `FRED_API_KEY`：可选
+- `FINNHUB_API_KEY`：可选
+- `TELEGRAM_BOT_TOKEN`：Telegram BotFather 创建的 bot token
+- `TELEGRAM_CHAT_ID`：接收报告的 chat id
+- `DISCORD_WEBHOOK_URL`：Discord channel webhook
+
+### Telegram / Discord 说明
+
+- Telegram 会收到完整 Markdown 报告附件
+- Discord 会收到同一份 Markdown 报告附件
+- 如果对应 secret 没填，工作流会跳过该推送步骤，不会让扫描失败

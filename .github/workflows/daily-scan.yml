@@ -1,0 +1,114 @@
+name: Daily Trading Scan
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_date:
+        description: "Optional run date (YYYY-MM-DD)"
+        required: false
+        type: string
+      refresh_prices:
+        description: "Force refresh downloaded price data"
+        required: false
+        default: false
+        type: boolean
+      send_notifications:
+        description: "Send Telegram and Discord notifications after the run"
+        required: false
+        default: true
+        type: boolean
+  schedule:
+    - cron: "30 20 * * 1-5"
+
+permissions:
+  contents: read
+
+jobs:
+  run-daily-scan:
+    runs-on: ubuntu-latest
+    env:
+      DAILY_SCAN_OUTPUT_DIR: ${{ github.workspace }}/artifacts
+      REPORT_PATH: ${{ github.workspace }}/artifacts/daily_scan_latest.md
+      FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+      FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run daily scan
+        env:
+          INPUT_RUN_DATE: ${{ github.event.inputs.run_date }}
+          INPUT_REFRESH_PRICES: ${{ github.event.inputs.refresh_prices }}
+        shell: bash
+        run: |
+          args=()
+          if [ -n "${INPUT_RUN_DATE}" ]; then
+            args+=(--date "${INPUT_RUN_DATE}")
+          fi
+          if [ "${INPUT_REFRESH_PRICES}" = "true" ]; then
+            args+=(--refresh-prices)
+          fi
+
+          python -m pipeline.run_daily "${args[@]}"
+
+      - name: Verify report output
+        shell: bash
+        run: |
+          test -f "${REPORT_PATH}"
+          ls -lah "${REPORT_PATH}"
+
+      - name: Add report preview to workflow summary
+        shell: bash
+        run: |
+          {
+            echo "## Daily Scan Preview"
+            echo
+            echo '```md'
+            sed -n '1,120p' "${REPORT_PATH}"
+            echo '```'
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-scan-report-${{ github.run_number }}
+          path: ${{ env.REPORT_PATH }}
+          retention-days: 14
+
+      - name: Send Telegram report
+        if: ${{ (github.event_name == 'schedule' || github.event.inputs.send_notifications != 'false') && secrets.TELEGRAM_BOT_TOKEN != '' && secrets.TELEGRAM_CHAT_ID != '' }}
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        shell: bash
+        run: |
+          curl -fSs -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument" \
+            -F "chat_id=${TELEGRAM_CHAT_ID}" \
+            -F "caption=Daily scan completed for ${GITHUB_REPOSITORY}. Workflow run: ${RUN_URL}" \
+            -F "document=@${REPORT_PATH};type=text/markdown"
+
+      - name: Send Discord report
+        if: ${{ (github.event_name == 'schedule' || github.event.inputs.send_notifications != 'false') && secrets.DISCORD_WEBHOOK_URL != '' }}
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        shell: bash
+        run: |
+          PAYLOAD_JSON=$(printf '{"content":"Daily scan completed for %s. Report attached.\\n%s"}' \
+            "${GITHUB_REPOSITORY}" \
+            "${RUN_URL}")
+
+          curl -fSs -X POST "${DISCORD_WEBHOOK_URL}" \
+            -F "payload_json=${PAYLOAD_JSON}" \
+            -F "file1=@${REPORT_PATH};type=text/markdown"
