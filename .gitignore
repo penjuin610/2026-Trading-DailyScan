@@ -1,0 +1,12 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+
+outputs/.DS_Store
+outputs/reports/
+outputs/watchlists/
+
+data/raw/
+data/processed/
+
+{config,data*

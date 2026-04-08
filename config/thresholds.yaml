@@ -1,0 +1,88 @@
+# ─────────────────────────────────────────────────────────────
+# thresholds.yaml  —  所有可调参数集中在此，不散落在代码里
+# 修改后重跑 pipeline 即可，无需动逻辑代码
+# ─────────────────────────────────────────────────────────────
+
+# ── L1 Event Risk ─────────────────────────────────────────────
+event_risk:
+  # 未来多少小时内有高影响事件 → 禁止新开仓
+  block_window_hours: 24
+  # 允许继续持仓但降仓比例（0.5 = 减半）
+  reduce_ratio_on_warning: 0.5
+
+# ── L2 Market Regime ──────────────────────────────────────────
+regime:
+  # SPY 必须在 200EMA 上方
+  spy_above_200ema: true
+  # QQQ 21EMA 必须 > 50EMA
+  qqq_21_gt_50: true
+  # VIX 绝对值上限（超过直接 Red）
+  vix_red_threshold: 28
+  # VIX 5日涨幅上限（超过触发 Yellow）
+  vix_5d_change_yellow: 0.25
+  # 10Y 5日变化（bp）超过此值 → 加压
+  us10y_5d_warn_bps: 15
+  # DXY 5日涨幅超过此值 → risk-off 信号
+  dxy_5d_warn_pct: 0.015
+
+# ── L3 Breadth ────────────────────────────────────────────────
+breadth:
+  # 宇宙内 % 在 200EMA 上方的最低要求（Green 门槛）
+  pct_above_200ema_green: 0.55
+  pct_above_200ema_yellow: 0.40
+  # NH/NL ratio 最低要求
+  nh_nl_ratio_min: 1.2
+  # Adv ratio 最低要求
+  adv_ratio_min: 0.50
+  # 综合 breadth score 门槛
+  score_green: 60
+  score_yellow: 40
+
+# ── L4 Sentiment ──────────────────────────────────────────────
+sentiment:
+  # 情绪分加减范围（-5 ~ +5）
+  max_boost: 5
+  max_penalty: -5
+  # heat decay：同主题连续多少天不创新高 → 过热警告
+  heat_decay_days: 3
+
+# ── L5 Structure ──────────────────────────────────────────────
+structure:
+  # 个股必须在 200EMA 上方
+  price_above_200ema: true
+  # 21EMA > 50EMA
+  ema21_gt_50: true
+  # 50EMA 必须向上（N 日斜率为正）
+  ema50_slope_days: 5
+  # 相对 SPY 的 20 日 RS 最低要求（百分点）
+  rs_vs_spy_min: 0.0
+  # 相对 sector ETF 的 20 日 RS 最低要求
+  rs_vs_sector_min: -2.0
+
+# ── L6 Trigger ────────────────────────────────────────────────
+trigger:
+  # 回踩时量能不超过突破日的比例
+  pullback_volume_ratio_max: 0.70
+  # 再启动时量能至少是 20 日均量的倍数
+  restart_volume_ratio_min: 1.20
+  # 回踩靠近 21EMA 的距离（%）
+  pullback_near_ema21_pct: 0.03
+  pullback_near_ema50_pct: 0.05
+
+# ── 综合门槛 ──────────────────────────────────────────────────
+checklist:
+  # 环境层（L1+L2+L3）最少通过项数
+  env_min_pass: 4
+  env_total: 5
+  # 整体通过率下限
+  overall_pass_rate: 0.70
+
+# ── 仓位管理 ──────────────────────────────────────────────────
+position:
+  max_single_pct: 0.40      # 单标的最多占总资金
+  stop_loss_option_pct: 0.50 # 期权单笔最大亏损
+  time_stop_days: 7          # 时间止损天数
+  take_profit_r1: 1.0        # 第一批减仓 R 倍
+  take_profit_r2: 2.0        # 第二批减仓 R 倍
+  reduce_pct_r1: 0.33
+  reduce_pct_r2: 0.33

@@ -1,0 +1,165 @@
+# ─────────────────────────────────────────────────────────────
+# universe.yaml  —  目标股票宇宙与 ETF 配置
+# ─────────────────────────────────────────────────────────────
+
+# ── 指数与 Regime ETF（必须完整，用于 L2）─────────────────────
+regime_etfs:
+  - SPY    # S&P 500
+  - QQQ    # Nasdaq 100
+  - IWM    # Russell 2000
+  - DIA    # Dow Jones
+
+# ── 板块 ETF（用于 L3 Breadth & Leadership）──────────────────
+sector_etfs:
+  XLK: Technology
+  XLV: Healthcare
+  XLE: Energy
+  XLF: Financials
+  XLI: Industrials
+  XLY: Consumer Discretionary
+  XLP: Consumer Staples
+  XLU: Utilities
+  XLB: Materials
+  XLRE: Real Estate
+  SMH: Semiconductors      # 高 beta 科技代理
+  ARKK: Innovation/High Beta
+
+# ── 个股宇宙（先从 80-100 只高流动性成长/科技开始）────────────
+# 可随时增删，pipeline 自动处理缺失数据
+stocks:
+  # Mega Cap Tech
+  - AAPL
+  - MSFT
+  - NVDA
+  - GOOGL
+  - META
+  - AMZN
+  - TSLA
+  - AVGO
+  - AMD
+  - ORCL
+  # High Beta Growth
+  - PLTR
+  - CRWD
+  - SNOW
+  - DDOG
+  - NET
+  - MSTR
+  - COIN
+  - APP
+  - AXON
+  - SMCI
+  # Semis
+  - TSM
+  - QCOM
+  - MU
+  - LRCX
+  - AMAT
+  - ASML
+  - ARM
+  - MRVL
+  # Biotech / Health
+  - LLY
+  - VRTX
+  - REGN
+  - MRNA
+  - BIIB
+  # Financials
+  - JPM
+  - GS
+  - V
+  - MA
+  - PYPL
+  # Industrial / Defense
+  - CAT
+  - DE
+  - RTX
+  - LMT
+  - NOC
+  # Energy
+  - XOM
+  - CVX
+  - OXY
+  - SLB
+  # Consumer
+  - COST
+  - NKE
+  - SBUX
+  - MCD
+  - CMG
+  # Special Situations / Momentum
+  - MELI
+  - SE
+  - SHOP
+  - ADBE
+  - CRM
+  - NOW
+  - UBER
+  - LYFT
+  - ABNB
+  - DASH
+
+# ── 标的与板块映射（用于计算个股 RS vs sector）────────────────
+stock_sector_map:
+  AAPL: XLK
+  MSFT: XLK
+  NVDA: SMH
+  GOOGL: XLK
+  META: XLK
+  AMZN: XLY
+  TSLA: XLY
+  AVGO: SMH
+  AMD: SMH
+  ORCL: XLK
+  PLTR: XLK
+  CRWD: XLK
+  SNOW: XLK
+  DDOG: XLK
+  NET: XLK
+  MSTR: XLK
+  COIN: XLK
+  APP: XLK
+  AXON: XLK
+  SMCI: SMH
+  TSM: SMH
+  QCOM: SMH
+  MU: SMH
+  LRCX: SMH
+  AMAT: SMH
+  ASML: SMH
+  ARM: SMH
+  MRVL: SMH
+  LLY: XLV
+  VRTX: XLV
+  REGN: XLV
+  MRNA: XLV
+  BIIB: XLV
+  JPM: XLF
+  GS: XLF
+  V: XLF
+  MA: XLF
+  PYPL: XLF
+  CAT: XLI
+  DE: XLI
+  RTX: XLI
+  LMT: XLI
+  NOC: XLI
+  XOM: XLE
+  CVX: XLE
+  OXY: XLE
+  SLB: XLE
+  COST: XLP
+  NKE: XLY
+  SBUX: XLY
+  MCD: XLY
+  CMG: XLY
+  MELI: XLY
+  SE: XLY
+  SHOP: XLY
+  ADBE: XLK
+  CRM: XLK
+  NOW: XLK
+  UBER: XLY
+  LYFT: XLY
+  ABNB: XLY
+  DASH: XLY
