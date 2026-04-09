@@ -34,14 +34,28 @@ class EventRisk:
     events_48h: list[dict] = field(default_factory=list)
     note:       str = ""
 
+    @staticmethod
+    def _serialize_events(events: list[dict]) -> list[dict]:
+        serialized: list[dict] = []
+        for event in events:
+            clean_event: dict = {}
+            for key, value in event.items():
+                if isinstance(value, (pd.Timestamp, datetime)):
+                    clean_event[key] = value.isoformat()
+                else:
+                    clean_event[key] = value
+            serialized.append(clean_event)
+        return serialized
+
     def to_dict(self) -> dict:
         return {
-            "gate_pass":       self.gate_pass,
+            "gate_pass":        self.gate_pass,
             "level":           self.level,
             "events_24h_count": len(self.events_24h),
             "events_48h_count": len(self.events_48h),
-            "events_24h":      self.events_24h,
-            "note":            self.note,
+            "events_24h":       self._serialize_events(self.events_24h),
+            "events_48h":       self._serialize_events(self.events_48h),
+            "note":             self.note,
         }
 
 
