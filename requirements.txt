@@ -1,0 +1,15 @@
+# 核心依赖（全部免费，pip install -r requirements.txt）
+yfinance>=0.2.36
+pandas>=2.0.0
+numpy>=1.26.0
+requests>=2.31.0
+pyyaml>=6.0.1
+feedparser>=6.0.10
+
+# 宏观数据（需要免费 FRED key）
+fredapi>=0.5.1
+
+# 可选：v1.1 情绪增强
+# transformers>=4.38.0
+# torch>=2.0.0
+# sentence-transformers>=2.6.0

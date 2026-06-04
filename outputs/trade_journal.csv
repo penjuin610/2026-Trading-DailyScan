@@ -1,0 +1,2 @@
+date,symbol,action,entry_price,stop_price,target_price,size_usd,strategy,regime_color,trigger,rs_vs_spy,final_score,exit_date,exit_price,pnl_usd,pnl_pct,holding_days,notes
+2026-04-02,EXAMPLE,BUY_CANDIDATE,100.00,94.00,115.00,500,bull_call_spread,Green,WATCH→BUY,+3.2,68.5,,,,,,"Template row - delete before use"
