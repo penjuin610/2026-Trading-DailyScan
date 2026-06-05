@@ -33,8 +33,79 @@ export FINNHUB_API_KEY=your_key
 # 4. 每日收盘后运行
 python -m pipeline.run_daily
 
-# 5. 查看报告
+# 5. 一键运行推送版
+python -m pipeline.run_push
+
+# 6. 查看报告
 cat "/Users/xiao1/Desktop/2026 Day Scan output/daily_scan_latest.md"
+```
+
+## 一键推送入口
+
+你可以用两种方式运行：
+
+```bash
+python -m pipeline.run_push
+```
+
+或者直接双击：
+
+```bash
+./run_daily_push.command
+```
+
+它会生成：
+
+- `daily_push_latest.md`
+- `daily_push_latest.html`
+- `latest_snapshot.json`
+
+并可选推送到 Discord 和 Email。
+
+## 怎么改自己的自选名单
+
+直接编辑 [config/my_watchlist.yaml](/Users/xiao1/Documents/Xiao1 trading/config/my_watchlist.yaml:1)。
+
+示例：
+
+```yaml
+watchlist:
+  - symbol: US.TSLA
+    alias: Tesla
+    enabled: true
+  - symbol: US.PDD
+    alias: PDD
+    enabled: true
+  - symbol: US.FIG
+    alias: Figma
+    enabled: false
+```
+
+你只需要记住三件事：
+
+- 加股票：复制一条，改 `symbol`
+- 改显示名：改 `alias`
+- 暂时不看：把 `enabled` 改成 `false`
+
+## Discord 和 Email 配置
+
+先在 `config/my_watchlist.yaml` 里把通知开关打开，再设置对应环境变量。
+
+Discord：
+
+```bash
+export DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/..."
+```
+
+Email：
+
+```bash
+export SMTP_HOST="smtp.example.com"
+export SMTP_PORT="587"
+export SMTP_USERNAME="your_user"
+export SMTP_PASSWORD="your_password"
+export SMTP_FROM="from@example.com"
+export SMTP_TO="to@example.com"
 ```
 
 ## 系统架构

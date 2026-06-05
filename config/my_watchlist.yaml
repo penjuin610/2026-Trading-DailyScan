@@ -1,0 +1,43 @@
+watchlist:
+  - symbol: US.TSLA
+    alias: Tesla
+    enabled: true
+  - symbol: US.PDD
+    alias: PDD
+    enabled: true
+  - symbol: US.FIG
+    alias: Figma
+    enabled: true
+
+notifications:
+  discord:
+    enabled: false
+    webhook_env: DISCORD_WEBHOOK_URL
+  email:
+    enabled: false
+    smtp_host_env: SMTP_HOST
+    smtp_port_env: SMTP_PORT
+    username_env: SMTP_USERNAME
+    password_env: SMTP_PASSWORD
+    from_env: SMTP_FROM
+    to_env: SMTP_TO
+
+report:
+  include_scan_candidates: true
+  include_watchlist: true
+  top_scan_limit: 15
+  chart_style: bar_and_table
+
+external_inputs:
+  sentiment:
+    futu: data/inputs/community/futu_comments.json
+    moomoo: data/inputs/community/moomoo_comments.json
+  events:
+    futu: data/inputs/events/futu_digest.json
+    moomoo: data/inputs/events/moomoo_digest.json
+  flow:
+    futu: data/inputs/flows/futu_capital.json
+    moomoo: data/inputs/flows/moomoo_capital.json
+  derivatives:
+    futu: data/inputs/derivatives/futu_derivatives.json
+    moomoo: data/inputs/derivatives/moomoo_derivatives.json

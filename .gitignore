@@ -5,6 +5,7 @@ __pycache__/
 outputs/.DS_Store
 outputs/reports/
 outputs/watchlists/
+outputs/data/
 
 data/raw/
 data/processed/

@@ -31,8 +31,79 @@ export FINNHUB_API_KEY=your_key
 # 4. Run after market close
 python -m pipeline.run_daily
 
-# 5. Read the report
+# 5. Run one-click watchlist push
+python -m pipeline.run_push
+
+# 6. Read the report
 cat "/Users/xiao1/Desktop/2026 Day Scan output/daily_scan_latest.md"
+```
+
+## One-Click Delivery
+
+Two entrypoints are available:
+
+```bash
+python -m pipeline.run_push
+```
+
+or desktop double-click:
+
+```bash
+./run_daily_push.command
+```
+
+This generates:
+
+- `daily_push_latest.md`
+- `daily_push_latest.html`
+- `latest_snapshot.json`
+
+and can publish to Discord + Email.
+
+## Editing Your Watchlist
+
+Edit [config/my_watchlist.yaml](/Users/xiao1/Documents/Xiao1 trading/config/my_watchlist.yaml:1).
+
+Example:
+
+```yaml
+watchlist:
+  - symbol: US.TSLA
+    alias: Tesla
+    enabled: true
+  - symbol: US.PDD
+    alias: PDD
+    enabled: true
+  - symbol: US.FIG
+    alias: Figma
+    enabled: false
+```
+
+How to change it:
+
+- add a stock: copy one item and change `symbol`
+- rename display name: change `alias`
+- temporarily hide it: set `enabled: false`
+
+## Discord and Email Setup
+
+Enable them in `config/my_watchlist.yaml`, then export the matching environment variables.
+
+Discord:
+
+```bash
+export DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/..."
+```
+
+Email:
+
+```bash
+export SMTP_HOST="smtp.example.com"
+export SMTP_PORT="587"
+export SMTP_USERNAME="your_user"
+export SMTP_PASSWORD="your_password"
+export SMTP_FROM="from@example.com"
+export SMTP_TO="to@example.com"
 ```
 
 ## Architecture
